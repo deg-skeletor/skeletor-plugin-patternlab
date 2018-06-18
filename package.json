@@ -1,0 +1,27 @@
+{
+  "name": "skeletor-plugin-patternlab",
+  "version": "0.1.0",
+  "description": "A Pattern Lab Skeletor plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint index.js"
+  },
+  "author": "Ryan Heap <heaper@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deg-skeletor/skeletor-plugin-patternlab.git"
+  },
+  "peerDependencies": {
+    "skeletor-core": "git+https://github.com/deg-skeletor/skeletor-core.git"
+  },
+  "dependencies": {
+    "fs-extra": "^6.0.1",
+    "patternlab-node": "^2.12.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.17.0",
+    "jest": "^22.2.1"
+  }
+}
