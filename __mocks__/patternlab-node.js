@@ -1,7 +1,5 @@
 'use strict';
 
-//const patternlab = jest.genMockFromModule('patternlab-node');
-
 const patternlab = jest.fn();
 
 let initError = null;

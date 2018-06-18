@@ -1,5 +1,5 @@
 {
-  "name": "skeletor-plugin-patternlab",
+  "name": "@skeletor/plugin-patternlab",
   "version": "0.1.0",
   "description": "A Pattern Lab Skeletor plugin",
   "main": "index.js",
