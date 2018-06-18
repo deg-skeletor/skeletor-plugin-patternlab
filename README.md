@@ -22,7 +22,7 @@ Install this plugin into your Skeletor-equipped project via the following termin
     "l": false,
     "full": false,
     "random": false,
-    "disco": false,
+    "disco": true,
     "hay": true,
     "mqs": false,
     "find": false,
