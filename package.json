@@ -14,7 +14,7 @@
     "url": "git+https://github.com/deg-skeletor/skeletor-plugin-patternlab.git"
   },
   "peerDependencies": {
-    "skeletor-core": "git+https://github.com/deg-skeletor/skeletor-core.git"
+    "@deg-skeletor/core": "^0.1.0"
   },
   "dependencies": {
     "fs-extra": "^6.0.1",
@@ -23,5 +23,13 @@
   "devDependencies": {
     "eslint": "^4.17.0",
     "jest": "^22.2.1"
-  }
+  },
+  "publishConfig": {
+      "access": "public"
+  },
+  "keywords": [
+      "skeletor",
+      "skeletor-plugin",
+      "patternlab"
+   ]
 }
