@@ -1,6 +1,6 @@
 {
-  "name": "@skeletor/plugin-patternlab",
-  "version": "0.1.0",
+  "name": "@deg-skeletor/plugin-patternlab",
+  "version": "0.1.1",
   "description": "A Pattern Lab Skeletor plugin",
   "main": "index.js",
   "scripts": {
