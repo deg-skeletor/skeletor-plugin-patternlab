@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- node
+cache:
+  directories:
+  - node_modules
+deploy:
+  provider: npm
+  email: scheul93@gmail.com
+  api_key:
+    secure: Sc4qD914Ina8zktBs7jrjvNPsK5fTs2j3yKlEOytmThS5Tf5b3+NEgilWdBfjxfE0Wcm5fXfIreN8+YbqAtAPhSTwmYkZ2s3LlND1L5o6RXg1/WWQaQqDeHs5lmobPh5JBh69IE0gwL7xaStrGCEw5bBjbKb4eOcEEiNORAG53eRMHyUL+MjaP5uYO2ha7ZXv3gbzS4HVreMyKwU2Y+ESy5ScGaQtCX1qT6ZerfoGjPEE1z9hbbg1OeEIzMLQ0u9P9jUmS3QnHuMue+lJ11qG3+eRlZrZCxwqTh2RxGlsYd4LADbpwQxv3Pco2d8v5WaQkU5w6+5CxB5NOvkbLPQ09ZLVS2v8Tdzzs8XcKPCE0URsJXdsLlhTKkrowhgZJQMIHaTR5/YPwqMc5hHJHIWNshqYMssizhaOxziU75yV0d2Oq33fsru8g+ZwnG5HxKPKOpZeSS3VsMHFWlmMdWUdm3Xgm9Gcl9ThZ3k8mF8vXBggqabOl/F3asUxfOkKZJYhdHSUa+4pA22eS1tfKuVOUTXJ/UmCtCogJjm+r57qGmnMFPvgIaE/7nw5PkA9GC7Q+DwAn0JLI5hKg94uRjiOdxiOmAmxVkdlnyAsco3Qq5LBOcLRTHysGMRybLUJZwGhqm5xHpyBD9PcHklyOutYqLBYwbGJtCKz4GWwRohldQ=
+  on:
+    branch: master
+    tags: true
+    repo: deg-skeletor/skeletor-plugin-patternlab
