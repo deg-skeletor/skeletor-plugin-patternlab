@@ -45,9 +45,9 @@ function run(config, options) {
 	const buildPatternsOnly = options.source ? true : false;
 
 	const promise = buildPatternsOnly ?
-		build(config, true) :
+		build(config, buildPatternsOnly) :
 		styleguideManager.copyAssets(config.paths)
-			.then(() => build(config));
+			.then(() => build(config, buildPatternsOnly));
 
 	return promise
 		.catch(e => handleError(e, options.logger));
