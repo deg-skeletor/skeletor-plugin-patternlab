@@ -19,7 +19,7 @@ function build(config, patternsOnly = false) {
 		const patternlabInst = patternlab(config);
 
 		const onBuildComplete = () => {
-			resolve(buildCompleteStatusObj());
+			resolve(true);
 		};
 		
 		try {
@@ -41,16 +41,17 @@ function handleError(e, logger) {
 }
 
 function run(config, options) {
-
 	const buildPatternsOnly = options.source ? true : false;
 
-	const promise = buildPatternsOnly ?
-		build(config, buildPatternsOnly) :
-		styleguideManager.copyAssets(config.paths)
-			.then(() => build(config, buildPatternsOnly));
+	const buildPromise = build(config, buildPatternsOnly);
 
-	return promise
-		.catch(e => handleError(e, options.logger));
+	const finalPromise = buildPatternsOnly ? 
+		buildPromise : 
+		buildPromise.then(() => styleguideManager.copyAssets(config.paths));
+
+	return finalPromise
+			.then(buildCompleteStatusObj)
+			.catch(e => handleError(e, options.logger));
 }
 
 module.exports = function(){
