@@ -1,6 +1,7 @@
 const patternlabPlugin = require('./index');
 const patternlab = require('patternlab-node');
 const styleguideManager = require('./lib/styleguideManager');
+const path = require('path');
 
 jest.mock('path');
 
@@ -94,6 +95,8 @@ beforeEach(() => {
 	patternlab.mockClear();
 
 	patternlab.__reset();
+
+	path.__reset();
 });
 
 describe('run() returns an error status object', () => {
@@ -181,18 +184,37 @@ describe('When run() is invoked normally', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function));
+		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 });
 
 describe('When run() is invoked as a result of a changed file', () => {
-	test('the Pattern Lab patternsonly() method is invoked', async () => {
+	test('the Pattern Lab patternsonly() method is invoked for an incremental build', async () => {
 		const patternlabInst = patternlab(validConfig);
 		const patternsOnlySpy = jest.spyOn(patternlabInst, 'patternsonly');
 
+		const pluginOptions = {...patternsOnlyPluginOptions};
+		pluginOptions.source.filename = 'source/_patterns/pattern.mustache';
+
+		path.__setRelativeReturnValue('pattern.mustache');
+
 		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
 		expect(patternsOnlySpy).toHaveBeenCalledTimes(1);
-		expect(patternsOnlySpy).toHaveBeenCalledWith(expect.any(Function));
+		expect(patternsOnlySpy).toHaveBeenCalledWith(expect.any(Function), false);
+	});
+
+	test('the Pattern Lab patternsonly() method is invoked for a full build', async () => {
+		const patternlabInst = patternlab(validConfig);
+		const patternsOnlySpy = jest.spyOn(patternlabInst, 'patternsonly');
+
+		const pluginOptions = {...patternsOnlyPluginOptions};
+		pluginOptions.source.filename = 'source/_data/data.json';
+
+		path.__setRelativeReturnValue('../_data/data.json');
+
+		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
+		expect(patternsOnlySpy).toHaveBeenCalledTimes(1);
+		expect(patternsOnlySpy).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
 	test('no styleguide assets are copied to the public folder', async () => {

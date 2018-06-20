@@ -1,5 +1,6 @@
 const patternlab = require('patternlab-node');
 const styleguideManager = require('./lib/styleguideManager');
+const { isPatternFile } = require('./lib/utils');
 
 function buildCompleteStatusObj() {
 	return {
@@ -14,7 +15,7 @@ function buildErrorStatusObj(error) {
 	};''
 }
 
-function build(config, patternsOnly = false) {
+function build(config, patternsOnly = false, doIncrementalBuild = false) {
 	return new Promise((resolve, reject) => {
 		const patternlabInst = patternlab(config);
 
@@ -24,9 +25,9 @@ function build(config, patternsOnly = false) {
 		
 		try {
 			if(patternsOnly) {
-				patternlabInst.patternsonly(onBuildComplete);
+				patternlabInst.patternsonly(onBuildComplete, !doIncrementalBuild);
 			} else {
-				patternlabInst.build(onBuildComplete);
+				patternlabInst.build(onBuildComplete, !doIncrementalBuild);
 			}
 		} catch(e) {
 			reject(e);
@@ -43,7 +44,11 @@ function handleError(e, logger) {
 function run(config, options) {
 	const buildPatternsOnly = options.source ? true : false;
 
-	const buildPromise = build(config, buildPatternsOnly);
+	const doIncrementalBuild = options.source ? 
+		isPatternFile(options.source.filepath, config.paths.source) :
+		false;
+
+	const buildPromise = build(config, buildPatternsOnly, doIncrementalBuild);
 
 	const finalPromise = buildPatternsOnly ? 
 		buildPromise : 
