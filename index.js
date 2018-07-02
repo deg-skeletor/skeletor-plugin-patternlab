@@ -15,7 +15,7 @@ function buildErrorStatusObj(error) {
 	};''
 }
 
-function build(config, patternsOnly = false, doIncrementalBuild = false) {
+function build(config, doIncrementalBuild = false) {
 	return new Promise((resolve, reject) => {
 		const patternlabInst = patternlab(config);
 
@@ -24,11 +24,7 @@ function build(config, patternsOnly = false, doIncrementalBuild = false) {
 		};
 		
 		try {
-			if(patternsOnly) {
-				patternlabInst.patternsonly(onBuildComplete, !doIncrementalBuild);
-			} else {
-				patternlabInst.build(onBuildComplete, !doIncrementalBuild);
-			}
+			patternlabInst.build(onBuildComplete, !doIncrementalBuild);
 		} catch(e) {
 			reject(e);
 		}
@@ -42,15 +38,13 @@ function handleError(e, logger) {
 }
 
 function run(config, options) {
-	const buildPatternsOnly = options.source ? true : false;
-
 	const doIncrementalBuild = options.source ? 
 		isPatternFile(options.source.filepath, config.paths.source) :
 		false;
 
-	const buildPromise = build(config, buildPatternsOnly, doIncrementalBuild);
+	const buildPromise = build(config, doIncrementalBuild);
 
-	const finalPromise = buildPatternsOnly ? 
+	const finalPromise = doIncrementalBuild ? 
 		buildPromise : 
 		buildPromise.then(() => styleguideManager.copyAssets(config.paths));
 

@@ -189,9 +189,9 @@ describe('When run() is invoked normally', () => {
 });
 
 describe('When run() is invoked as a result of a changed file', () => {
-	test('the Pattern Lab patternsonly() method is invoked for an incremental build', async () => {
+	test('the Pattern Lab build() method is invoked for an incremental build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const patternsOnlySpy = jest.spyOn(patternlabInst, 'patternsonly');
+		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filename = 'source/_patterns/pattern.mustache';
@@ -199,13 +199,13 @@ describe('When run() is invoked as a result of a changed file', () => {
 		path.__setRelativeReturnValue('pattern.mustache');
 
 		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
-		expect(patternsOnlySpy).toHaveBeenCalledTimes(1);
-		expect(patternsOnlySpy).toHaveBeenCalledWith(expect.any(Function), false);
+		expect(buildSpy).toHaveBeenCalledTimes(1);
+		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), false);
 	});
 
-	test('the Pattern Lab patternsonly() method is invoked for a full build', async () => {
+	test('the Pattern Lab build() method is invoked for a full build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const patternsOnlySpy = jest.spyOn(patternlabInst, 'patternsonly');
+		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filename = 'source/_data/data.json';
@@ -213,8 +213,8 @@ describe('When run() is invoked as a result of a changed file', () => {
 		path.__setRelativeReturnValue('../_data/data.json');
 
 		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
-		expect(patternsOnlySpy).toHaveBeenCalledTimes(1);
-		expect(patternsOnlySpy).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(buildSpy).toHaveBeenCalledTimes(1);
+		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
 	test('no styleguide assets are copied to the public folder', async () => {
