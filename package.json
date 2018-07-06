@@ -1,6 +1,6 @@
 {
   "name": "@deg-skeletor/plugin-patternlab",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "A Pattern Lab Skeletor plugin",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/deg-skeletor/skeletor-plugin-patternlab.git"
   },
   "peerDependencies": {
-    "@deg-skeletor/core": "^0.1.0"
+    "@deg-skeletor/core": "^1.0.0"
   },
   "dependencies": {
     "fs-extra": "^6.0.1",
