@@ -11,7 +11,7 @@ Install this plugin into your Skeletor-equipped project via the following termin
 
 ### Example Configuration
 ```js
-{
+module.exports = {
   "cacheBust": true,
   "cleanPublic" : true,
   "defaultPattern": "all",
