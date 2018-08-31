@@ -1,5 +1,6 @@
 const patternlab = require('patternlab-node');
 const styleguideManager = require('./lib/styleguideManager');
+const patternExporter = require('./lib/patternExporter');
 const { isPatternFile } = require('./lib/utils');
 
 function buildCompleteStatusObj() {
@@ -15,7 +16,7 @@ function buildErrorStatusObj(error) {
 	};''
 }
 
-function build(config, doIncrementalBuild = false) {
+async function build(config, doIncrementalBuild = false) {
 	return new Promise((resolve, reject) => {
 		const patternlabInst = patternlab(config);
 
@@ -37,20 +38,36 @@ function handleError(e, logger) {
 	return buildErrorStatusObj(e);
 }
 
-function run(config, options) {
+async function run(config, options) {
+	const { patternLabConfig, patternExport } = config;
+
 	const doIncrementalBuild = options.source ? 
-		isPatternFile(options.source.filepath, config.paths.source) :
+		isPatternFile(options.source.filepath, patternLabConfig.paths.source) :
 		false;
 
-	const buildPromise = build(config, doIncrementalBuild);
+	try {
+		await build(patternLabConfig, doIncrementalBuild);
+	} catch(e) {
+		return Promise.resolve(handleError(e, options.logger));
+	}
 
-	const finalPromise = doIncrementalBuild ? 
-		buildPromise : 
-		buildPromise.then(() => styleguideManager.copyAssets(config.paths));
+	if(!doIncrementalBuild) {
+		try {
+			await styleguideManager.copyAssets(patternLabConfig.paths);
+		} catch(e) {
+			return Promise.resolve(handleError(e, options.logger));
+		}
+	}
 
-	return finalPromise
-			.then(buildCompleteStatusObj)
-			.catch(e => handleError(e, options.logger));
+	if(patternExport) {
+		try {
+			await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);
+		} catch(e) {
+			return Promise.resolve(handleError(e, options.logger));
+		}
+	}
+
+	return Promise.resolve(buildCompleteStatusObj());
 }
 
 module.exports = function(){
