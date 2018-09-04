@@ -1,7 +1,9 @@
 const patternlabPlugin = require('./index');
 const patternlab = require('patternlab-node');
 const styleguideManager = require('./lib/styleguideManager');
+const patternExporter = require('./lib/patternExporter');
 const path = require('path');
+const globby = require('globby');
 
 jest.mock('path');
 
@@ -22,7 +24,7 @@ const patternsOnlyPluginOptions = {
 	}
 };
 
-const validConfig = {
+const patternLabConfig = {
 	"cacheBust": true,
 	"cleanPublic" : true,
 	"defaultPattern": "all",
@@ -68,9 +70,9 @@ const validConfig = {
 		"public" : {
 			"root" : "./public/",
 			"patterns" : "./public/patterns/",
-		  	"data" : "./public/styleguide/data/",
-		 	"annotations" : "./public/annotations/",
-		  	"styleguide" : "./public/styleguide/"
+			"data" : "./public/styleguide/data/",
+			"annotations" : "./public/annotations/",
+			"styleguide" : "./public/styleguide/"
 		}
 	},
 	"patternExtension": "mustache",
@@ -87,6 +89,10 @@ const validConfig = {
 		"density": "compact",
 		"layout": "horizontal"
 	}
+};
+
+const validConfig = {
+	patternLabConfig
 };
 
 beforeEach(() => {
@@ -165,7 +171,7 @@ describe('run() initializes Pattern Lab with the correct configuration', () => {
 	test('when a valid configuration is provided', async () => {
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlab).toHaveBeenCalledTimes(1);
-		expect(patternlab).toHaveBeenCalledWith(validConfig);
+		expect(patternlab).toHaveBeenCalledWith(validConfig.patternLabConfig);
 	});
 });
 
@@ -175,7 +181,7 @@ describe('When run() is invoked normally', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(copyAssetsSpy).toHaveBeenCalledTimes(1);
-		expect(copyAssetsSpy).toHaveBeenCalledWith(validConfig.paths);
+		expect(copyAssetsSpy).toHaveBeenCalledWith(validConfig.patternLabConfig.paths);
 	});
 
 	test('the Pattern Lab build() method is invoked', async () => {
@@ -222,5 +228,27 @@ describe('When run() is invoked as a result of a changed file', () => {
 
 		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
 		expect(copyAssetsSpy).not.toHaveBeenCalled();
+	});
+});
+
+describe('When run() is invoked with a patternExport configuration', () => {
+
+	const configWithExport = {
+		...validConfig,
+		patternExport: [
+			{
+				patterns: 'components/*',
+				dest: './dist/patterns/',
+				includeHeadFoot: true
+			}
+		]
+	};
+
+	test('the pattern exporter is invoked with the correct parameters', async () => {
+		const exportPatternsSpy = jest.spyOn(patternExporter, 'exportPatterns');
+
+		await patternlabPlugin().run(configWithExport, pluginOptions);
+		expect(exportPatternsSpy).toHaveBeenCalledTimes(1);
+		expect(exportPatternsSpy).toHaveBeenCalledWith(configWithExport.patternLabConfig, configWithExport.patternExport, logger);
 	});
 });
