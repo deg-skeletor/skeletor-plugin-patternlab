@@ -8,7 +8,7 @@ const readFile = jest.fn((filepath, format) => {
 	if(files[filepath]) {
 		return Promise.resolve(files[filepath]);
 	}
-	return Promise.reject('Could not find file ' + filepath);
+	return Promise.reject(`Could not find file ${filepath}`);
 });
 
 const outputFile = jest.fn((file, data) => Promise.resolve());
