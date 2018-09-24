@@ -40,7 +40,7 @@ function handleError(e, logger) {
 
 async function run(config, options) {
 	const { patternLabConfig, patternExport } = config;
-
+	
 	const doIncrementalBuild = options.source ? 
 		isPatternFile(options.source.filepath, patternLabConfig.paths.source) :
 		false;

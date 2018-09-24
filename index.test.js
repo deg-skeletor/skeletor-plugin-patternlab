@@ -194,39 +194,72 @@ describe('When run() is invoked normally', () => {
 	});
 });
 
-describe('When run() is invoked as a result of a changed file', () => {
-	test('the Pattern Lab build() method is invoked for an incremental build', async () => {
+describe('When run() is invoked as a result of a changed', () => {
+	test('pattern file, the Pattern Lab build() method is invoked for an incremental build', async () => {
 		const patternlabInst = patternlab(validConfig);
 		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
-		pluginOptions.source.filename = 'source/_patterns/pattern.mustache';
+		pluginOptions.source.filepath = 'source/_patterns/pattern.mustache';
 
 		path.__setRelativeReturnValue('pattern.mustache');
 
-		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
+		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(buildSpy).toHaveBeenCalledTimes(1);
 		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), false);
 	});
 
-	test('the Pattern Lab build() method is invoked for a full build', async () => {
+	test('meta pattern file, the Pattern Lab build() method is invoked for a full build', async () => {
 		const patternlabInst = patternlab(validConfig);
 		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
-		pluginOptions.source.filename = 'source/_data/data.json';
+		pluginOptions.source.filepath = 'source/_meta/_00-head.mustache';
 
-		path.__setRelativeReturnValue('../_data/data.json');
+		path.__setRelativeReturnValue('../_meta/_00-head.mustache');
 
-		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
+		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(buildSpy).toHaveBeenCalledTimes(1);
 		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
-	test('no styleguide assets are copied to the public folder', async () => {
+	test('data.json file, the Pattern Lab build() method is invoked for a full build', async () => {
+		const patternlabInst = patternlab(validConfig);
+		const buildSpy = jest.spyOn(patternlabInst, 'build');
+
+		const pluginOptions = {...patternsOnlyPluginOptions};
+		pluginOptions.source.filepath = 'source/_data/data.json';
+
+		path.__setRelativeReturnValue('../_data/data.json');
+
+		await patternlabPlugin().run(validConfig, pluginOptions);
+		expect(buildSpy).toHaveBeenCalledTimes(1);
+		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+	});
+
+	test('pattern JSON file, the Pattern Lab build() method is invoked for a full build', async () => {
+		const patternlabInst = patternlab(validConfig);
+		const buildSpy = jest.spyOn(patternlabInst, 'build');
+
+		const pluginOptions = {...patternsOnlyPluginOptions};
+		pluginOptions.source.filepath = 'source/_patterns/04-pages/00-homepage.json';
+
+		path.__setRelativeReturnValue('./04-pages/00-homepage.json');
+
+		await patternlabPlugin().run(validConfig, pluginOptions);
+		expect(buildSpy).toHaveBeenCalledTimes(1);
+		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+	});
+
+	test('pattern file, no styleguide assets are copied to the public folder', async () => {
 		const copyAssetsSpy = jest.spyOn(styleguideManager, 'copyAssets');
 
-		await patternlabPlugin().run(validConfig, patternsOnlyPluginOptions);
+		const pluginOptions = {...patternsOnlyPluginOptions};
+		pluginOptions.source.filepath = 'source/_patterns/pattern.mustache';
+
+		path.__setRelativeReturnValue('pattern.mustache');
+
+		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(copyAssetsSpy).not.toHaveBeenCalled();
 	});
 });

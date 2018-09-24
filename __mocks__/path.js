@@ -15,8 +15,16 @@ function join(val1, val2) {
 	return `${val1}/${val2}`;
 }
 
-function extname() {
-	return '.mustache';
+function extname(filepath) {
+	if(!filepath) {
+		return '';
+	}
+
+	const parts = filepath.split('.');
+	if(parts.length) {
+		return `.${parts[parts.length-1]}`;
+	}
+	return '';
 }
 
 function basename(path) {
