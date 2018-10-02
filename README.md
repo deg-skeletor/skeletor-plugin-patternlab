@@ -4,7 +4,7 @@ This plugin runs [Pattern Lab](http://patternlab.io) and is part of the Skeletor
 ## Installation
 Install this plugin into your Skeletor-equipped project via the following terminal command: 
 ```
-    npm install --save-dev git+https://git@github.com/deg-skeletor/skeletor-plugin-patternlab.git
+    npm install --save-dev @deg-skeletor/plugin-patternlab
 ```
 
 ## Configuration
@@ -12,19 +12,31 @@ Install this plugin into your Skeletor-equipped project via the following termin
 ### Example Configuration
 ```js
 {
-  "patternExport": [
-    {
-      patterns: 'components/*',
-      dest: './dist/patterns/',
-      includeHeadFoot: false
-    },
-    {
-      patterns: 'pages/*',
-      dest: './dist/patterns/',
-      includeHeadFoot: true
-    }
-  ],
-  "patternLabConfig": {
+  patternExport: {
+    patternGroups: [
+      {
+        patterns: 'components/*',
+        dest: './dist/patterns/',
+        includeHeadFoot: false
+      },
+      {
+        patterns: 'pages/*',
+        dest: './dist/patterns/',
+        includeHeadFoot: true
+      }
+    ],
+    assetPathReplacements: [
+      {
+        path: '../../images/',
+        replacementPath: '/images/'
+      },
+      {
+        path: '../../css/',
+        replacementPath: '/styles/'
+      }
+    ]
+  },  
+  patternLabConfig: {
     "cacheBust": true,
     "cleanPublic" : true,
     "defaultPattern": "all",
@@ -96,8 +108,16 @@ Install this plugin into your Skeletor-equipped project via the following termin
 ### Configuration Options
 
 #### patternExport
+Type: `Object`
+An optional configuration object for exporting patterns.
+
+#### patternExport.patternGroups
 Type: `Array`
-An array of one or more pattern group objects, each containing `patterns`, `dest`, and `includeHeadFoot` properties. 
+An array of one or more pattern group objects, each containing `patterns`, `dest`, and `includeHeadFoot` properties.
+
+#### patternExport.assetPathReplacements
+Type: `Array`
+An array of one or more asset path replacement objects, each containing `path` and `replacementPath` properties.
 
 #### patternLabConfig
 Type: `Object`

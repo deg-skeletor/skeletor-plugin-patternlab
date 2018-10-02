@@ -268,13 +268,21 @@ describe('When run() is invoked with a patternExport configuration', () => {
 
 	const configWithExport = {
 		...validConfig,
-		patternExport: [
-			{
-				patterns: 'components/*',
-				dest: './dist/patterns/',
-				includeHeadFoot: true
-			}
-		]
+		patternExport: {
+			patternGroups: [
+				{
+					patterns: 'components/*',
+					dest: './dist/patterns/',
+					includeHeadFoot: true
+				}
+			],
+			assetPathReplacements: [
+				{
+					path: '../../images/',
+					replacementPath: '/images/'
+				}
+			]
+		}
 	};
 
 	test('the pattern exporter is invoked with the correct parameters', async () => {
