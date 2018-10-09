@@ -186,18 +186,16 @@ describe('When run() is invoked normally', () => {
 
 	test('the Pattern Lab build() method is invoked', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 });
 
 describe('When run() is invoked as a result of a changed', () => {
 	test('pattern file, the Pattern Lab build() method is invoked for an incremental build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filepath = 'source/_patterns/pattern.mustache';
@@ -205,13 +203,12 @@ describe('When run() is invoked as a result of a changed', () => {
 		path.__setRelativeReturnValue('pattern.mustache');
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), false);
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), false);
 	});
 
 	test('meta pattern file, the Pattern Lab build() method is invoked for a full build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filepath = 'source/_meta/_00-head.mustache';
@@ -219,13 +216,12 @@ describe('When run() is invoked as a result of a changed', () => {
 		path.__setRelativeReturnValue('../_meta/_00-head.mustache');
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
 	test('data.json file, the Pattern Lab build() method is invoked for a full build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filepath = 'source/_data/data.json';
@@ -233,13 +229,12 @@ describe('When run() is invoked as a result of a changed', () => {
 		path.__setRelativeReturnValue('../_data/data.json');
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
 	test('pattern JSON file, the Pattern Lab build() method is invoked for a full build', async () => {
 		const patternlabInst = patternlab(validConfig);
-		const buildSpy = jest.spyOn(patternlabInst, 'build');
 
 		const pluginOptions = {...patternsOnlyPluginOptions};
 		pluginOptions.source.filepath = 'source/_patterns/04-pages/00-homepage.json';
@@ -247,8 +242,8 @@ describe('When run() is invoked as a result of a changed', () => {
 		path.__setRelativeReturnValue('./04-pages/00-homepage.json');
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(buildSpy).toHaveBeenCalledTimes(1);
-		expect(buildSpy).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
 	});
 
 	test('pattern file, no styleguide assets are copied to the public folder', async () => {
@@ -291,5 +286,52 @@ describe('When run() is invoked with a patternExport configuration', () => {
 		await patternlabPlugin().run(configWithExport, pluginOptions);
 		expect(exportPatternsSpy).toHaveBeenCalledTimes(1);
 		expect(exportPatternsSpy).toHaveBeenCalledWith(configWithExport.patternLabConfig, configWithExport.patternExport, logger);
+	});
+});
+
+describe('When run() is invoked with a method is specified', () => {
+	
+	test('it runs the build method', async () => {
+		const configWithMethod = {
+			...validConfig,
+			method: 'build'
+		};
+
+		const patternlabInst = patternlab(validConfig);
+		await patternlabPlugin().run(configWithMethod, pluginOptions);
+
+		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
+	});
+
+	test('it runs the patternsonly method', async () => {
+		const configWithMethod = {
+			...validConfig,
+			method: 'patternsonly'
+		};
+
+		const patternlabInst = patternlab(validConfig);
+
+		await patternlabPlugin().run(configWithMethod, pluginOptions);
+
+		expect(patternlabInst.patternsonly).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.patternsonly).toHaveBeenCalledWith(expect.any(Function), true);
+	});
+
+	test('it runs the loadstarterkit method', async () => {
+		const starterkit = '@deg-skeletor/starterkit-mustache-default';
+		
+		const configWithMethod = {
+			...validConfig,
+			method: 'loadstarterkit',
+			methodArgs: [starterkit]
+		};
+
+		const patternlabInst = patternlab(validConfig);
+
+		await patternlabPlugin().run(configWithMethod, pluginOptions);
+
+		expect(patternlabInst.loadstarterkit).toHaveBeenCalledTimes(1);
+		expect(patternlabInst.loadstarterkit).toHaveBeenCalledWith(starterkit);
 	});
 });
