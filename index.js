@@ -16,21 +16,40 @@ function buildErrorStatusObj(error) {
 	};''
 }
 
-async function build(config, doIncrementalBuild = false) {
-	return new Promise((resolve, reject) => {
-		const patternlabInst = patternlab(config);
+async function runBuildMethod(patternlabInst, method, config, options) {
+	const { patternLabConfig, patternExport } = config;
 
+	const doIncrementalBuild = options.source ? 
+		isPatternFile(options.source.filepath, patternLabConfig.paths.source) :
+		false;
+
+	await buildPatternLab(patternlabInst, method, doIncrementalBuild);
+	
+	if(!doIncrementalBuild && method !== 'patternsonly') {
+		await styleguideManager.copyAssets(patternLabConfig.paths);
+	}
+
+	if(patternExport) {
+		await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);		
+	}
+}
+
+async function buildPatternLab(patternlabInst, method, doIncrementalBuild = false) {
+	return new Promise((resolve, reject) => {
 		const onBuildComplete = () => {
 			resolve(true);
 		};
 		
 		try {
-			patternlabInst.build(onBuildComplete, !doIncrementalBuild);
+			patternlabInst[method](onBuildComplete, !doIncrementalBuild);
 		} catch(e) {
 			reject(e);
 		}
-		
 	});
+}
+
+function runNonBuildMethod(patternlabInst, method, methodArgs) {
+	patternlabInst[method](...methodArgs);
 }
 
 function handleError(e, logger) {
@@ -39,32 +58,17 @@ function handleError(e, logger) {
 }
 
 async function run(config, options) {
-	const { patternLabConfig, patternExport } = config;
-	
-	const doIncrementalBuild = options.source ? 
-		isPatternFile(options.source.filepath, patternLabConfig.paths.source) :
-		false;
-
 	try {
-		await build(patternLabConfig, doIncrementalBuild);
+		const patternlabInst = patternlab(config.patternLabConfig);
+		const method = config.method || 'build';
+
+		if(method === 'build' || method === 'patternsonly') {
+			await runBuildMethod(patternlabInst, method, config, options);
+		} else {
+			runNonBuildMethod(patternlabInst, method, config.methodArgs);
+		}
 	} catch(e) {
 		return Promise.resolve(handleError(e, options.logger));
-	}
-
-	if(!doIncrementalBuild) {
-		try {
-			await styleguideManager.copyAssets(patternLabConfig.paths);
-		} catch(e) {
-			return Promise.resolve(handleError(e, options.logger));
-		}
-	}
-
-	if(patternExport) {
-		try {
-			await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);
-		} catch(e) {
-			return Promise.resolve(handleError(e, options.logger));
-		}
 	}
 
 	return Promise.resolve(buildCompleteStatusObj());

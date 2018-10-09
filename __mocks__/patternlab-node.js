@@ -8,6 +8,9 @@ let buildError = null;
 function __reset() {
 	initError = null;
 	buildError = null;
+	instance.build.mockClear();
+	instance.patternsonly.mockClear();
+	instance.loadstarterkit.mockClear();
 }
 
 function __setInitError(error) {
@@ -30,8 +33,9 @@ patternlab.__setBuildError = __setBuildError;
 patternlab.__reset = __reset;
 
 const instance = {
-	build,
-	patternsonly: build
+	build: jest.fn(build),
+	patternsonly: jest.fn(build),
+	loadstarterkit: jest.fn()
 };
 
 patternlab.mockImplementation(options => {

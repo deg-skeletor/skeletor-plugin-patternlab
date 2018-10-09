@@ -11,31 +11,7 @@ Install this plugin into your Skeletor-equipped project via the following termin
 
 ### Example Configuration
 ```js
-{
-  patternExport: {
-    patternGroups: [
-      {
-        patterns: 'components/*',
-        dest: './dist/patterns/',
-        includeHeadFoot: false
-      },
-      {
-        patterns: 'pages/*',
-        dest: './dist/patterns/',
-        includeHeadFoot: true
-      }
-    ],
-    assetPathReplacements: [
-      {
-        path: '../../images/',
-        replacementPath: '/images/'
-      },
-      {
-        path: '../../css/',
-        replacementPath: '/styles/'
-      }
-    ]
-  },  
+{ 
   patternLabConfig: {
     "cacheBust": true,
     "cleanPublic" : true,
@@ -101,13 +77,51 @@ Install this plugin into your Skeletor-equipped project via the following termin
       "density": "compact",
       "layout": "horizontal"
     }
+  },
+  method: 'build',
+  methodArgs: [],
+  patternExport: {
+    patternGroups: [
+      {
+        patterns: 'components/*',
+        dest: './dist/patterns/',
+        includeHeadFoot: false
+      },
+      {
+        patterns: 'pages/*',
+        dest: './dist/patterns/',
+        includeHeadFoot: true
+      }
+    ],
+    assetPathReplacements: [
+      {
+        path: '../../images/',
+        replacementPath: '/images/'
+      },
+      {
+        path: '../../css/',
+        replacementPath: '/styles/'
+      }
+    ]
   }
 }
 ```
 
 ### Configuration Options
 
-#### patternExport
+#### patternLabConfig
+Type: `Object`
+The configuratin object for Pattern Lab. See the [official Pattern Lab documentation](http://patternlab.io/docs/advanced-config-options.html) for configuration details.
+
+#### method (optional)
+Type: `String`
+The Pattern Lab method to execute. If omitted, this option defaults to `build`. Acceptable values include `build`, `patternsonly`, `version`, `help`, `liststarterkits`, and `loadstarterkit`.
+
+#### methodArgs (optional)
+Type: `Array`
+An array of arguments to pass to the Pattern Lab method specified in the `method` configuration option. For example, the value of this option could be `['@deg-skeletor/starterkit-mustache-default']` for the `loadstarterkit` method.
+
+#### patternExport (optional)
 Type: `Object`
 An optional configuration object for exporting patterns.
 
@@ -119,6 +133,3 @@ An array of one or more pattern group objects, each containing `patterns`, `dest
 Type: `Array`
 An array of one or more asset path replacement objects, each containing `path` and `replacementPath` properties.
 
-#### patternLabConfig
-Type: `Object`
-The configuratin object for Pattern Lab. See the [official Pattern Lab documentation](http://patternlab.io/docs/advanced-config-options.html) for configuration details.
