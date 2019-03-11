@@ -1,7 +1,7 @@
 const patternlab = require('patternlab-node');
 const styleguideManager = require('./lib/styleguideManager');
 const patternExporter = require('./lib/patternExporter');
-const { isPatternFile } = require('./lib/utils');
+const {isPatternFile} = require('./lib/utils');
 
 function buildCompleteStatusObj() {
 	return {
@@ -11,26 +11,26 @@ function buildCompleteStatusObj() {
 
 function buildErrorStatusObj(error) {
 	return {
-		status: 'error', 
+		status: 'error',
 		message: error.message
-	};''
+	};
 }
 
 async function runBuildMethod(patternlabInst, method, config, options) {
-	const { patternLabConfig, patternExport } = config;
+	const {patternLabConfig, patternExport} = config;
 
-	const doIncrementalBuild = options.source ? 
+	const doIncrementalBuild = options.source ?
 		isPatternFile(options.source.filepath, patternLabConfig.paths.source) :
 		false;
 
 	await buildPatternLab(patternlabInst, method, doIncrementalBuild);
-	
+
 	if(!doIncrementalBuild && method !== 'patternsonly') {
 		await styleguideManager.copyAssets(patternLabConfig.paths);
 	}
 
 	if(patternExport) {
-		await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);		
+		await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);
 	}
 }
 
@@ -39,7 +39,7 @@ async function buildPatternLab(patternlabInst, method, doIncrementalBuild = fals
 		const onBuildComplete = () => {
 			resolve(true);
 		};
-		
+
 		try {
 			patternlabInst[method](onBuildComplete, !doIncrementalBuild);
 		} catch(e) {
@@ -74,7 +74,7 @@ async function run(config, options) {
 	return Promise.resolve(buildCompleteStatusObj());
 }
 
-module.exports = function(){
+module.exports = function() {
 	return {
 		run
 	};

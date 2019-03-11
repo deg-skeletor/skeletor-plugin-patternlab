@@ -85,12 +85,14 @@ Install this plugin into your Skeletor-equipped project via the following termin
       {
         patterns: 'components/*',
         dest: './dist/patterns/',
-        includeHeadFoot: false
+        includeHeadFoot: false,
+        flatten: false
       },
       {
         patterns: 'pages/*',
         dest: './dist/patterns/',
-        includeHeadFoot: true
+        includeHeadFoot: true,
+        flatten: true
       }
     ],
     assetPathReplacements: [
@@ -127,9 +129,34 @@ An optional configuration object for exporting patterns.
 
 #### patternExport.patternGroups
 Type: `Array`
-An array of one or more pattern group objects, each containing `patterns`, `dest`, and `includeHeadFoot` properties.
+An array of one or more pattern group objects, which define groups of patterns to export. A pattern group contains the following options:
+
+##### patternGroup.patterns
+Type: `String`
+The path to the patterns to be exported. Globbing is supported. For example, `components/*` would export all patterns within the `components` directory.
+
+##### patternGroup.dest
+Type: `String`
+The base destination directory to export the patterns to. Example: `./dist/patterns`. See the `patternGroup.flatten` option below for details on how exported patterns are organized within this base destination directory.
+
+##### patternGroup.includeHeadFoot (optional)
+Type: `Boolean`
+Default: `false`
+A flag for including the pattern header and footer in the exported patterns. If `false`, only a pattern's HTML will be exported.
+
+##### patternGroup.flatten (optional)
+Type: `Boolean`
+Default: `false`
+A flag for flattening all of the exported pattern files within the base destination directory. If `false`, pattern files will be exported to sub-directories within the destination directory that mimic the structure of the source pattern files. For example, given a base destination directory of `./dist/patterns`, a `components/frame/header.mustache` pattern would be exported to `./dist/patterns/frame/header.html`.
 
 #### patternExport.assetPathReplacements
 Type: `Array`
-An array of one or more asset path replacement objects, each containing `path` and `replacementPath` properties.
+An array of one or more asset path replacement objects. Path replacement is useful for updating portions of asset paths (the `src` of an `<img>`, for example) within the HTML of patterns during export. For example, you may want to update the paths within the `src` of all `<img>` tags from  `../../images/` to `/images/`. A path replacement object contains the following options:
 
+##### assetPathReplacement.path
+Type: `String`
+The asset path to target for replacement. For example, `../../images/`.
+
+##### assetPathReplacement.replacementPath
+Type: `String`
+The path to replace targeted asset paths with. For example, `/images/`.
