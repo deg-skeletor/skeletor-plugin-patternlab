@@ -1,6 +1,6 @@
 {
   "name": "@deg-skeletor/plugin-patternlab",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "A Pattern Lab Skeletor plugin",
   "main": "index.js",
   "scripts": {
@@ -19,12 +19,12 @@
   "dependencies": {
     "fs-extra": "^6.0.1",
     "globby": "^8.0.2",
-    "js-beautify": "^1.9.0",
+    "js-beautify": "^1.10.0",
     "patternlab-node": "^2.12.0"
   },
   "devDependencies": {
-    "eslint": "^5.15.1",
-    "jest": "^24.4.0"
+    "eslint": "^5.16.0",
+    "jest": "^24.8.0"
   },
   "publishConfig": {
     "access": "public"
