@@ -1,5 +1,4 @@
-const patternlab = require('patternlab-node');
-const styleguideManager = require('./lib/styleguideManager');
+const patternlab = require('@pattern-lab/core');
 const patternExporter = require('./lib/patternExporter');
 const {isPatternFile} = require('./lib/utils');
 
@@ -25,27 +24,17 @@ async function runBuildMethod(patternlabInst, method, config, options) {
 
 	await buildPatternLab(patternlabInst, method, doIncrementalBuild);
 
-	if(!doIncrementalBuild && method !== 'patternsonly') {
-		await styleguideManager.copyAssets(patternLabConfig.paths);
-	}
-
 	if(patternExport) {
 		await patternExporter.exportPatterns(patternLabConfig, patternExport, options.logger);
 	}
 }
 
 async function buildPatternLab(patternlabInst, method, doIncrementalBuild = false) {
-	return new Promise((resolve, reject) => {
-		const onBuildComplete = () => {
-			resolve(true);
-		};
+	const options = {
+		cleanPublic: !doIncrementalBuild
+	};
 
-		try {
-			patternlabInst[method](onBuildComplete, !doIncrementalBuild);
-		} catch(e) {
-			reject(e);
-		}
-	});
+	return patternlabInst[method](options);
 }
 
 function runNonBuildMethod(patternlabInst, method, methodArgs) {
@@ -58,6 +47,10 @@ function handleError(e, logger) {
 }
 
 async function run(config, options) {
+	if(typeof config === 'undefined' || typeof config.patternLabConfig === 'undefined') {
+		return Promise.resolve(handleError(new Error('Invalid configuration object'), options.logger));
+	}
+
 	try {
 		const patternlabInst = patternlab(config.patternLabConfig);
 		const method = config.method || 'build';

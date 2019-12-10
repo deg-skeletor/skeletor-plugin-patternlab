@@ -21,11 +21,11 @@ function __setBuildError(error) {
 	buildError = error;
 }
 
-function build(callback, options) {
+function build(options) {
 	if(buildError !== null) {
-		throw buildError;
+		return Promise.reject(buildError);
 	}
-	return callback();
+	return Promise.resolve();
 }
 
 patternlab.__setInitError = __setInitError;

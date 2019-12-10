@@ -1,9 +1,7 @@
 const patternlabPlugin = require('./index');
-const patternlab = require('patternlab-node');
-const styleguideManager = require('./lib/styleguideManager');
+const patternlab = require('@pattern-lab/core');
 const patternExporter = require('./lib/patternExporter');
 const path = require('path');
-const globby = require('globby');
 
 jest.mock('path');
 
@@ -64,8 +62,14 @@ const patternLabConfig = {
 			"data" : "./source/_data/",
 			"meta": "./source/_meta/",
 			"annotations" : "./source/_annotations/",
-			"styleguide" : "./node_modules/styleguidekit-assets-default/dist/",
-			"patternlabFiles" : "./node_modules/styleguidekit-mustache-default/views"
+			"styleguide": "./dist/",
+			patternlabFiles: {
+				"general-header": "./views/partials/general-header.mustache",
+				"general-footer": "./views/partials/general-footer.mustache",
+				"patternSection": "./views/partials/patternSection.mustache",
+				"patternSectionSubtype": "./views/partials/patternSectionSubtype.mustache",
+				"viewall": "./views/viewall.mustache"
+			}
 		},
 		"public" : {
 			"root" : "./public/",
@@ -88,7 +92,16 @@ const patternLabConfig = {
 		"color": "dark",
 		"density": "compact",
 		"layout": "horizontal"
-	}
+	},
+	"uikits": [
+		{
+		  "name": "uikit-workshop",
+		  "outputDir": "",
+		  "enabled": true,
+		  "excludedPatternStates": [],
+		  "excludedTags": []
+		}
+	]
 };
 
 const validConfig = {
@@ -176,20 +189,12 @@ describe('run() initializes Pattern Lab with the correct configuration', () => {
 });
 
 describe('When run() is invoked normally', () => {
-	test('styleguide assets are copied to the public folder', async () => {
-		const copyAssetsSpy = jest.spyOn(styleguideManager, 'copyAssets');
-
-		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(copyAssetsSpy).toHaveBeenCalledTimes(1);
-		expect(copyAssetsSpy).toHaveBeenCalledWith(validConfig.patternLabConfig.paths);
-	});
-
 	test('the Pattern Lab build() method is invoked', async () => {
 		const patternlabInst = patternlab(validConfig);
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: true});
 	});
 });
 
@@ -204,7 +209,7 @@ describe('When run() is invoked as a result of a changed', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), false);
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: false});
 	});
 
 	test('meta pattern file, the Pattern Lab build() method is invoked for a full build', async () => {
@@ -217,7 +222,7 @@ describe('When run() is invoked as a result of a changed', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: true});
 	});
 
 	test('data.json file, the Pattern Lab build() method is invoked for a full build', async () => {
@@ -230,7 +235,7 @@ describe('When run() is invoked as a result of a changed', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: true});
 	});
 
 	test('pattern JSON file, the Pattern Lab build() method is invoked for a full build', async () => {
@@ -243,19 +248,7 @@ describe('When run() is invoked as a result of a changed', () => {
 
 		await patternlabPlugin().run(validConfig, pluginOptions);
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
-	});
-
-	test('pattern file, no styleguide assets are copied to the public folder', async () => {
-		const copyAssetsSpy = jest.spyOn(styleguideManager, 'copyAssets');
-
-		const pluginOptions = {...patternsOnlyPluginOptions};
-		pluginOptions.source.filepath = 'source/_patterns/pattern.mustache';
-
-		path.__setRelativeReturnValue('pattern.mustache');
-
-		await patternlabPlugin().run(validConfig, pluginOptions);
-		expect(copyAssetsSpy).not.toHaveBeenCalled();
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: true});
 	});
 });
 
@@ -301,7 +294,7 @@ describe('When run() is invoked with a method is specified', () => {
 		await patternlabPlugin().run(configWithMethod, pluginOptions);
 
 		expect(patternlabInst.build).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.build).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.build).toHaveBeenCalledWith({cleanPublic: true});
 	});
 
 	test('it runs the patternsonly method', async () => {
@@ -315,7 +308,7 @@ describe('When run() is invoked with a method is specified', () => {
 		await patternlabPlugin().run(configWithMethod, pluginOptions);
 
 		expect(patternlabInst.patternsonly).toHaveBeenCalledTimes(1);
-		expect(patternlabInst.patternsonly).toHaveBeenCalledWith(expect.any(Function), true);
+		expect(patternlabInst.patternsonly).toHaveBeenCalledWith({cleanPublic: true});
 	});
 
 	test('it runs the loadstarterkit method', async () => {
