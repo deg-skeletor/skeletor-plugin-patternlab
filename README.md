@@ -1,6 +1,8 @@
 # Skeletor Pattern Lab Plugin
 This plugin runs [Pattern Lab](http://patternlab.io) and is part of the Skeletor ecosystem. To learn more about Skeletor, [go here](https://github.com/deg-skeletor/skeletor-core).
 
+**THIS REPOSITORY IS NO LONGER MAINTAINED**
+
 ## Installation
 Install this plugin into your Skeletor-equipped project via the following terminal command: 
 ```
